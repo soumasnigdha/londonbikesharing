@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>London Bike Sharing Data Visualization</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #333;
+      }
+      .plot-container {
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        padding: 10px;
+      }
+      .data-container {
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        padding: 10px;
+      }
+      .slider-container {
+        margin-bottom: 20px;
+      }
+      label {
+        display: inline-block;
+        width: 100px;
+        margin-bottom: 5px;
+      }
+      input[type="date"],
+      input[type="number"],
+      input[type="submit"] {
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .weather-split,
+      .hourly-split {
+        display: inline-block;
+        margin-right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>London Bike Sharing Data Visualization</h1>
+
+    <div class="slider-container">
+      <h2>Select Date Range and Moving Average Window</h2>
+      <form method="POST">
+        <div>
+          <label for="start_date">Start Date:</label>
+          <input
+            type="date"
+            id="start_date"
+            name="start_date"
+            min="{{ min_date }}"
+            max="{{ max_date }}"
+            value="{{ default_start_date }}"
+          />
+        </div>
+        <div>
+          <label for="end_date">End Date:</label>
+          <input
+            type="date"
+            id="end_date"
+            name="end_date"
+            min="{{ min_date }}"
+            max="{{ max_date }}"
+            value="{{ default_end_date }}"
+          />
+        </div>
+        <div>
+          <label for="moving_average_window"
+            >Moving Average Window (days):</label
+          >
+          <input
+            type="number"
+            id="moving_average_window"
+            name="moving_average_window"
+            min="1"
+            value="{{ default_window }}"
+          />
+        </div>
+        <input type="submit" value="Update Visualization" />
+      </form>
+    </div>
+
+    {% if plot_url_ma %}
+    <div class="plot-container">
+      <h2>Total Bike Rides with Moving Average</h2>
+      <img
+        src="data:image/png;base64,{{ plot_url_ma }}"
+        alt="Moving Average Plot"
+      />
+    </div>
+    {% endif %}
+
+    <div class="data-container">
+      <h2>Total Number of Bike Rides</h2>
+      <p>Total rides in the selected period: {{ total_rides }}</p>
+    </div>
+
+    <div class="data-container">
+      <h2>Total Bike Rides Split by Weather</h2>
+      {% for weather, count in weather_data.items() %}
+      <div class="weather-split">
+        <strong>{{ weather }}:</strong> {{ count }}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="data-container">
+      <h2>Total Bike Rides Split by Hour</h2>
+      {% for hour, count in hourly_counts.items() %}
+      <div class="hourly-split">
+        <strong>Hour {{ hour }}:</strong> {{ count }}
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if plot_url_heatmap %}
+    <div class="plot-container">
+      <h2>Temperature vs Wind Speed (Average Bike Rides)</h2>
+      <img
+        src="data:image/png;base64,{{ plot_url_heatmap }}"
+        alt="Temperature vs Wind Speed Heatmap"
+      />
+    </div>
+    {% endif %}
+  </body>
+</html>
